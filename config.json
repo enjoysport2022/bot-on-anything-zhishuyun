@@ -2,7 +2,7 @@
   "model": {
     "type" : "zhishuyun",
     "openai": {
-      "token": "541cef5cf4374c86a1ca39f5b3c77229",
+      "token": "你自己的知数云token",
       "conversation_max_tokens": 1000,
       "character_desc": "你是ChatGPT, 一个由OpenAI训练的大型语言模型, 你旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。"
     }
