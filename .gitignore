@@ -3,7 +3,6 @@
 __pycache__/
 venv*
 *.pyc
-config.json
 QR.png
 data/
 device.json
