@@ -9,6 +9,7 @@ import time
 import requests
 
 user_session = dict()
+user_conversation_id = {}
 
 # OpenAI对话模型API (可用)
 class ZhishuyunModel(Model):
@@ -45,20 +46,32 @@ class ZhishuyunModel(Model):
                 'accept': 'application/json',
                 'content-type': 'application/json'
             }
-            payload = {
-                'question': query[-1]['content']
-            }
+            if user_id in user_conversation_id:
+                conversation_id = user_conversation_id[user_id]
+                payload = {
+                    'question': query[-1]['content'],
+                    "stateful": True,
+                    'conversation_id': conversation_id
+                }
+            else:
+                payload = {
+                    'question': query[-1]['content'],
+                    "stateful": True
+                }
 
             response = requests.post(url, json=payload, headers=headers)
-            reply_content = response.text
-            # print(response.text)
+
+            answer = response.json()['answer']
+            conversation_id = response.json()['conversation_id']
+            user_conversation_id[user_id] = conversation_id
+
             used_token = 500
             log.debug(response)
-            log.info("[CHATGPT] reply={}", reply_content)
-            if reply_content:
+            log.info("[CHATGPT] reply={}", answer)
+            if answer:
                 # save conversation
-                Session.save_session(query, reply_content, user_id, used_token)
-            return eval(reply_content)['answer']
+                Session.save_session(query, answer, user_id, used_token)
+            return answer
         
         except openai.error.RateLimitError as e:
             # rate limit exception
